@@ -40,7 +40,7 @@ Qfloat::Qfloat(string s) {
 	int len = s.length();							// độ dài tham số chuỗi 
 	int i = 0;										// biến đếm dùng cho vòng lặp
 	if (s[0] == '-') {								// nếu là số âm
-		SetBit(0, 1);								// thì set bit 1 tại vị trí 0
+		this->SetBit(0, 1);							// thì set bit data là 1 tại vị trí 0
 		i++;										// tăng biến đếm đến vị trí tiếp theo
 	}
 	// tách integer và decimal
@@ -56,14 +56,13 @@ Qfloat::Qfloat(string s) {
 	for (; i < len; i++) {							// chuyển phần thập phân vào decimal
 		decimal += s[i];
 	}
-	string integer_bin = IntegerToBinary(integer);	// chuyển integer sang nhị phân
-	//----
-	cout << integer_bin; // chưa reverse
-	string decimal_bin;
+	string integer_bin = this->IntegerToBinary(integer);			// chuyển integer sang nhị phân
+	string decimal_bin = this->DecimalToBinary(decimal);			// chuyển decimal sang nhị phân
+	int exponent = this->ExponentValue(integer_bin, decimal_bin);	// tính exponent
 }
-string Qfloat::IntegerToBinary(string s) {			// chưa reverse
+string Qfloat::IntegerToBinary(string s) {			
 	string result;
-	while (s != "0") {								// chia tới khi s = 0
+	while (s != "0") {								// chia integer tới khi s = 0
 		int len = s.length();
 		if ((s[len - 1] - '0') % 2 == 0) {			// chia hết cho 2
 			result += '0';
@@ -75,6 +74,30 @@ string Qfloat::IntegerToBinary(string s) {			// chưa reverse
 	}
 	if (result.empty()) {
 		result = "0";
+	}
+	reverse(result.begin(), result.end());			// đảo chuỗi
+	return result;
+}
+string Qfloat::DecimalToBinary(string s) { // chưa làm tròn
+	string result;
+	int count = fraction_num;						// biến đếm trường hợp phần bit thập phân dài hơn fraction
+	while (count--) {
+		string temp = this->Mul2String(s);			// *2 phàn decimal
+		if (temp.length() > s.length()) {			// nếu ra trường hợp 1.xx
+			result += '1';							// thêm bit 1
+			temp.erase(0, 1);						// xoá số 1 ở đầu (1.xx -1 = 0.xx)
+		}
+		else {
+			result += '0';							// thêm bit 0
+		}
+		s = temp;										
+		bool check = 0;								// check xem = 1 chưa
+		for (int i = 0; i < s.length(); i++) {
+			if (s[i] != '0')
+				check = 1;
+		}
+		if (check == 0)								// nếu đã = 1 thì thoát				
+			break;																	
 	}
 	return result;
 }
@@ -157,17 +180,8 @@ string Qfloat::Mul2String(string s) {
 		}
 	}
 	//while (result[0] == '0' && result.length() > 1) {
-	//	result.erase(0, 1);							// xoá số 0 ở đầu
+	//	result.erase(0, 1);							// không xoá số 0 ở đầu tránh TH 03 x 2 = 06
 	//}
 	return result;
 }
 
-string reverse(string const &s)
-{
-	string rev;
-	for (int i = s.size() - 1; i >= 0; i--) {
-		rev = rev.append(1, s[i]);
-	};
-
-	return rev;
-}

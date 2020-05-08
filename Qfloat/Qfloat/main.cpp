@@ -1,5 +1,8 @@
 ﻿#include "Qfloat.h"
 
+
+
+
 int main() {
 	Qfloat a;
 	cout << "Nhap so thap phan: ";

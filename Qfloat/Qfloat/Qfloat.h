@@ -22,6 +22,7 @@ private:
 	string Div2String(string);			// trả về kết quả là chuỗi string*2
 	string Mul2String(string);			// trả về kết quả là chuỗi string/2
 	string IntegerToBinary(string);		//Chuyển chuỗi số đằng trước dấu phẩy thành nhị phân
+	string DecimalToBinary(string);
 	int ExponentValue(string, string);	// Tính exponent 
 
 public:
