@@ -16,7 +16,7 @@ QInt::QInt(const QInt& x)
 	this->Data[3] = x.Data[3];
 }
 
-QInt::QInt(const string &Bin)
+QInt::QInt(const string& Bin)
 {
 	Data[0] = 0;
 	Data[1] = 0;
@@ -83,7 +83,7 @@ QInt& QInt::operator=(const QInt& x)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			this -> Data[i] = x.Data[i];
+			this->Data[i] = x.Data[i];
 		}
 		return *this;
 	}
@@ -152,6 +152,10 @@ QInt QInt::operator<<(const int& Bit)
 	}
 	return result;
 }
+
+
+
+
 
 QInt& QInt::rol()
 {
@@ -345,6 +349,36 @@ string QInt::QInttoStrDec()
 	return result;
 }
 
+QInt QInt::bu2()
+{
+	QInt temp(StrDectoBin("1"));  // so 1 int bit
+	return this->bu1() + temp;	  // bu2 = bu1+1;
+}
+
+QInt QInt::operator~()
+{
+	QInt result;
+	/*
+	NOT(~) =>{
+		not 0 = 1
+		not 1 = 0
+	}
+	*/
+	for (int i = 0; i < 128; i++) {
+		if (this->getBitPositionI(i) == 0) {
+			result.setBitPositionIto1(i);
+		}
+		else
+		{
+			result.setBitPositionIto0(i);
+		}
+	}
+	return result;
+}
+
+
+
+
 string QInt::QInttoBin()
 {
 	string Bin;
@@ -353,13 +387,308 @@ string QInt::QInttoBin()
 	{
 		for (int j = 0; j < 32; j++)
 		{
-			temp = ((Data[i] >> (31 - j)) & 1)+'0';
+			temp = ((Data[i] >> (31 - j)) & 1) + '0';
 			Bin.push_back(temp);
 		}
 	}
 	return Bin;
 }
 
+QInt QInt::bu1()
+{
+	QInt result;
+	string Bin;
+	char temp;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			int Bit = getBitPositionI(i * 32 + j);
+			if (Bit == 1) {
+				result.setBitPositionIto0(i * 32 + j); // chuyen tu 1 ->0
+			}
+			else {
+				result.setBitPositionIto1(i * 32 + j); // chuyen tu 0 ->1
+			}
+		}
+	}
+	return result;
+}
 
+int QInt::getBitPositionI(int i)
+{
+	int result;
+	size_t posIntArr = i / (sizeof(int) * CHAR_BIT); // vi tri - Data[pos]
+	size_t posBitInArr = i - posIntArr *(sizeof(int) * CHAR_BIT); // vi tri - Data[pos]
+	result = (Data[posIntArr]>>(31- posBitInArr)) & 1;
+	return result;
+}
+
+void QInt::setBitPositionIto1(int i)
+{
+	int result;
+	size_t posIntArr = i / (sizeof(int) * CHAR_BIT); // vi tri - Data[pos]
+	size_t posBitInArr = i - posIntArr * (sizeof(int) * CHAR_BIT); // vi tri - Data[pos]
+	Data[posIntArr] = (Data[posIntArr] | (1 << (31 - posBitInArr))); // dung OR voi bit 1 duoc dich qua trai 31 - posBitInArr 
+}
+
+void QInt::setBitPositionIto0(int i)
+{
+	int result;
+	size_t posIntArr = i / (sizeof(int) * CHAR_BIT); // vi tri - Data[pos]
+	size_t posBitInArr = i - posIntArr * (sizeof(int) * CHAR_BIT); // vi tri - Data[pos]
+	Data[posIntArr] = (Data[posIntArr] & (~(1 << (31 - posBitInArr)))); // dung AND voi bit 0 dich qua trai 31 - posBitInArr - tat ca cac bit con lai la 1
+}
+
+QInt operator+( QInt a,  QInt b)
+{
+	QInt result;
+	int memorize = 0; // lưu biến nhớ khi thức hiện phép cộng vd: 1 + 1 thì memorize = 1
+	int sum = 0; // tổng khi cộng 2 bit lại
+	// chạy từ bit 127 ->0
+	for (int i = 3; i >= 0; i--) 
+	{
+		for (int j = 31; j >= 0; j--)
+		{	
+			int Bita = a.getBitPositionI(i * 32 + j); // lấy vị trí 2 bit
+			int Bitb = b.getBitPositionI(i * 32 + j);	// lấy vị trí 2 bit
+			
+			sum = Bita + Bitb + memorize; //tổng 2 bit với biến nhớ ở bit trước
+			//gán kết quả 
+			if (sum % 2 == 0) {
+				result.setBitPositionIto0(i * 32 + j);
+			}
+			else {
+				result.setBitPositionIto1(i * 32 + j);
+			}
+
+			//lưu biến nhớ cho bit sau
+			memorize =(int)sum / 2;
+		}
+	}
+	return result;
+}
+
+QInt operator-(QInt a, QInt b)
+{
+	QInt result;
+	/*
+		ý tưởng : a - b = a + (-b);
+		-b = b.bu2();
+	*/
+	b = b.bu2();
+	result = a + b;
+	return result;
+}
+
+QInt operator*(QInt a, QInt b)
+{
+	QInt result;
+	QInt tempMulti;
+	int isNegative = 1; //kiem tra xem sau khi chia xong la so duong hay am
+	//Kiem tra so am  de chuyen thanh so duong
+	if (a.getBitPositionI(0) == 1) {
+		a = a.bu2();
+		isNegative = isNegative * -1;
+	}
+	if (b.getBitPositionI(0) == 1) {
+		b = b.bu2();
+		isNegative = isNegative * -1;
+	}
+
+	/*
+		y tuong :
+		Neu bit a vi tri i = 1 :
+			+ Lấy b dịch qua trái i vị trí rồi cộng vào kq
+		Do đều chuyển qua số dương nên bit dấu bằng 0
+	*/ 
+
+	for (int i = 3; i >= 0; i--)
+	{
+		for (int j = 31; j >= 0; j--)
+		{
+			if (a.getBitPositionI(i * 32 + j) == 1) {
+				tempMulti = b << (127 - (i * 32 + j));
+				result = result + tempMulti;
+			}
+		}
+	}
+	//Nếu (a*b<0) thì chuyển kết quả sang bù 2 
+	if (isNegative == -1) {
+		result = result.bu2();
+	}
+	return result;
+}
+
+QInt operator/(QInt a, QInt b)
+{
+	QInt result;
+	//kiem tra xem sau khi chia xong la so duong hay am
+	int isNegative = 1;
+
+	//Kiem tra so am  de chuyen thanh so duong
+	if (a.getBitPositionI(0) == 1) {
+		a = a.bu2();
+		isNegative = isNegative * -1; //neu am thi *-1
+	}
+	if (b.getBitPositionI(0) == 1) {
+		b = b.bu2();
+		isNegative = isNegative * -1; //neu am thi *-1
+	}
+	/*
+		y tuong :
+		Dịch temp = 1(Dec) qua trái khi nào b*temp > a thì 
+		lấy 
+			+ temp = temp >> 1;
+			+ a = a - b * temp;
+			+ result = result + temp;
+		Lặp lại đến khi a = 0;
+	*/
+	while (!a.is_Zero()) {
+		QInt temp;
+		temp.setBitPositionIto1(127);  //temp = 1;
+	
+		for (int i = 0; i < 128; i++) { //de dich so 1(DEC) qua trai
+			if (temp * b > a && i!=0) {  
+				temp = temp >> 1; 
+				result = result + temp;
+				a = a - b * temp;
+				break;
+			}
+			if (temp * b > a && i == 0) {
+				temp = temp >> 1;
+				a = temp;
+				break;
+			}
+			temp = temp << 1;
+		}
+	}
+	//Nếu (a*b<0) thì chuyển kết quả sang bù 2 
+	if (isNegative == -1) {
+		result = result.bu2();
+	}
+	return result;
+}
+
+QInt operator&(QInt a, QInt b)
+{
+	QInt result;
+	/*
+		and(&) =>{
+			0 and 0 = 0
+			1 and 1 = 1
+			0 and 1 = 0
+			1 and 0 = 0
+		}
+	*/
+	for (int i = 0; i < 128; i++) {
+		int A_BitI = a.getBitPositionI(i);
+		int B_BitI = b.getBitPositionI(i);
+		if (A_BitI == 1 && B_BitI == 1) {
+			result.setBitPositionIto1(i);
+		}
+		else {
+			result.setBitPositionIto0(i);
+		}
+	}
+	return result;
+}
+
+QInt operator|(QInt a, QInt b)
+{
+	QInt result;
+	/*
+		or(|) =>{
+			0 or 0 = 0
+			1 or 1 = 1
+			0 or 1 = 1
+			1 or 0 = 1
+		}
+	*/
+	for (int i = 0; i < 128; i++) {
+		int A_BitI = a.getBitPositionI(i);
+		int B_BitI = b.getBitPositionI(i);
+		if (A_BitI == 0 && B_BitI == 0) {
+			result.setBitPositionIto0(i);
+		}
+		else {
+			result.setBitPositionIto1(i);
+		}
+	}
+	return result;
+}
+
+QInt operator^(QInt a, QInt b)
+{
+	QInt result;
+	/*
+		xor(^) =>{
+			0 xor 0 = 0
+			1 xor 1 = 0
+			0 xor 1 = 1
+			1 xor 0 = 1
+		}
+	*/
+	for (int i = 0; i < 128; i++) {
+		int A_BitI = a.getBitPositionI(i);
+		int B_BitI = b.getBitPositionI(i);
+		if ((A_BitI == 1 && B_BitI == 1) || (A_BitI == 0 && B_BitI == 0)) {
+			result.setBitPositionIto0(i);
+		}
+		else {
+			result.setBitPositionIto1(i);
+		}
+	}
+	return result;
+}
+
+
+
+
+
+bool operator>(QInt a, QInt b)
+{
+	QInt minus = a - b;
+	if (minus.getBitPositionI(0) == 0 && !minus.is_Zero()) {
+		return true;
+	}
+	return false;
+}
+
+bool operator<(QInt a, QInt b)
+{
+	QInt minus = a - b;
+	if (minus.getBitPositionI(0) == 1) {
+		return true;
+	}
+	return false;
+}
+
+bool operator==(QInt a, QInt b)
+{
+	QInt minus = a - b;
+	if (minus.is_Zero()) {
+		return true;
+	}
+	return false;
+}
+
+bool operator>=(QInt a, QInt b)
+{
+	QInt minus = a - b;
+	if (minus.getBitPositionI(0) == 1) {
+		return false;
+	}
+	return true;
+}
+
+bool operator<=(QInt a, QInt b)
+{
+	QInt minus = a - b;
+	if (minus.getBitPositionI(0) == 0 && !minus.is_Zero()) {
+		return false;
+	}
+	return true;
+}
 
 
