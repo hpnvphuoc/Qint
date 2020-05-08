@@ -15,26 +15,26 @@ using namespace std;
 //---------------------------
 class Qfloat {
 private:
-	int data[4];				// kiểu dữ liệu 32 bytes (128 bits)
+	int data[4];					// kiểu dữ liệu 32 bytes (128 bits)
 
 	void SetBit1(int);						// đặt bit 1 tại vị trí i
 	int GetBit(int);						// lấy bit ở vị trí bất kỳ
 	string Div2String(string);				// trả về kết quả là chuỗi string*2
 	string Mul2String(string);				// trả về kết quả là chuỗi string/2
 	string IntegerToBinary(string);			// chuyển chuỗi số đằng trước dấu chấm thành nhị phân
-	string DecimalToBinary(string);			// chuyển chuỗi số đằng sau dấu chấm thành nhị phân => PROBLEM: chưa làm tròn lên, xuống
+	string DecimalToBinary(string);			// chuyển chuỗi số đằng sau dấu chấm thành nhị phân						=> PROBLEM: chưa làm tròn lên, xuống
 	int ExponentValue(string, string);		// tính exponent 
 	void AddExponent(int);					// ghi exponent vào data
 	void AddFraction(int, string, string);	// ghi fraction vào data
 public:
-	Qfloat();							// default constructor
-	Qfloat(const Qfloat&);				// copy constructor
-	Qfloat(string);						// constructor với tham số là chuỗi
-	~Qfloat();							// hàm huỷ
-	void ScanQfloat();					// đọc Qfloat ở dạng thập phân
-	void PrintQfloat();					// in ra Qfloat dưới dạng nhị phân	-> hàm DecToBin, tách ra làm 1 hàm riêng cũng dc
+	Qfloat();								// default constructor
+	Qfloat(const Qfloat&);					// copy constructor
+	Qfloat(string);							// constructor với tham số là chuỗi
+	~Qfloat();								// hàm huỷ
+	void ScanQfloat();						// đọc Qfloat ở dạng thập phân											=> PROBLEM: chưa giới hạn range
+	void PrintQfloat();						// in ra Qfloat dưới dạng nhị phân	
 };
 
-
+void DecToBin(Qfloat a);					// chuyển đổi số Qfloat thập phân sang nhị phân
 
 #endif

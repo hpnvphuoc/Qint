@@ -77,7 +77,7 @@ string Qfloat::IntegerToBinary(string s) {
 	reverse(result.begin(), result.end());			// đảo chuỗi
 	return result;
 }
-string Qfloat::DecimalToBinary(string s) { // chưa làm tròn
+string Qfloat::DecimalToBinary(string s) { 
 	string result;
 	int count = fraction_num;						// biến đếm trường hợp phần bit thập phân dài hơn fraction
 	while (count--) {
@@ -179,7 +179,7 @@ string Qfloat::Mul2String(string s) {
 		}
 	}
 	//while (result[0] == '0' && result.length() > 1) {
-	//	result.erase(0, 1);							// không xoá số 0 ở đầu tránh TH 03 x 2 = 6
+	//	result.erase(0, 1);							// không xoá số 0 ở đầu, vd: 03 x 2 = 06 
 	//}
 	return result;
 }
@@ -251,4 +251,11 @@ void Qfloat::AddFraction(int exponent, string integer, string decimal) {
 		}
 	}
 
+}
+void DecToBin(Qfloat a){
+	cout << "Nhap so thap phan" << endl;
+	cout << "Dec: ";
+	a.ScanQfloat();
+	cout << "Bin: ";
+	a.PrintQfloat();
 }
