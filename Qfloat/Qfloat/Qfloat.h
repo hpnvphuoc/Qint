@@ -13,15 +13,16 @@
 #include <vector>
 using namespace std;
 //---------------------------
-class Qfloat{
+class Qfloat {
 private:
-	int data[4]; // kiểu dữ liệu 32 bytes
-	int SetBit(int,bool);
-	int GetBit(int);
-	string Div2String(string);
-	string Mul2String(string);
-	string IntegerToBinary(string);				//Chuyển chuỗi số đăng trước dấu phẩy thành nhị ph
+	int data[4];				// kiểu dữ liệu 32 bytes
 
+	int SetBit(int, bool);
+	int GetBit(int);					// lấy bit ở vị trí bất kỳ
+	string Div2String(string);			// trả về kết quả là chuỗi string*2
+	string Mul2String(string);			// trả về kết quả là chuỗi string/2
+	string IntegerToBinary(string);		//Chuyển chuỗi số đằng trước dấu phẩy thành nhị phân
+	int ExponentValue(string, string);	// Tính exponent 
 
 public:
 	Qfloat();							// default constructor

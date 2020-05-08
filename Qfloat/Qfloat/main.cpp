@@ -4,7 +4,6 @@ int main() {
 	Qfloat a;
 	cout << "Nhap so thap phan: ";
 	a.ScanQfloat();
-	a.PrintQfloat();
-	
+	//a.PrintQfloat();
 	return 0;
 }

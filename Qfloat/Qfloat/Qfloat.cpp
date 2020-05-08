@@ -4,7 +4,7 @@ Qfloat::Qfloat() {
 		this->data[i] = 0;
 }
 Qfloat::Qfloat(const Qfloat &p) {
-	for (int i = 0; i < 4; i++) 					// copy từng byte của p vào Qfloat
+	for (int i = 0; i < 4; i++)						// copy từng byte của p vào Qfloat
 		this->data[i] = p.data[i];
 }
 Qfloat::~Qfloat() {}
@@ -59,6 +59,7 @@ Qfloat::Qfloat(string s) {
 	string integer_bin = IntegerToBinary(integer);	// chuyển integer sang nhị phân
 	//----
 	cout << integer_bin; // chưa reverse
+	string decimal_bin;
 }
 string Qfloat::IntegerToBinary(string s) {			// chưa reverse
 	string result;
@@ -72,13 +73,30 @@ string Qfloat::IntegerToBinary(string s) {			// chưa reverse
 		}
 		s = this->Div2String(s);					// chia chuỗi cho 2, đã xử lý trường hợp nhập 000x.
 	}
-	if (result.empty()) {							
+	if (result.empty()) {
 		result = "0";
 	}
-	return result; 
+	return result;
 }
-
-
+int Qfloat::ExponentValue(string integer, string decimal) {
+	int int_len = integer.length();					// độ dài phần nguyên
+	int dec_len = decimal.length();					// độ dài phần thập phân
+	int exponent;									// giá trị exponent
+	for (int i = 0; i < int_len; i++) {
+		if (integer[i] == '1') {					// gặp số 1 đầu tiên
+			exponent = bias_num + (int_len - i - 1);// số dấu , phải dời = độ dài - (số số 0 phía trc + số 1 đầu tiên)
+			return exponent;
+		}
+	}
+	for (int i = 0; i < dec_len; i++) {				// nếu không gặp số 1 ở phần integer thì chuyển sang phần decimal
+		if (decimal[i] == '1') {					// gặp số 1 đầu tiên
+			exponent = bias_num - i - 1;			// số dấu , phải dời = số số đứng trc số 1 + số 1 đầu tiên 
+			return exponent;
+		}
+	}
+	exponent = 0;									// chuỗi = 0
+	return exponent;
+}
 string Qfloat::Div2String(string s) {
 	string result;									// chuỗi lưu kết quả
 	int	dividend = 0;								// số bị chia
@@ -142,4 +160,14 @@ string Qfloat::Mul2String(string s) {
 	//	result.erase(0, 1);							// xoá số 0 ở đầu
 	//}
 	return result;
+}
+
+string reverse(string const &s)
+{
+	string rev;
+	for (int i = s.size() - 1; i >= 0; i--) {
+		rev = rev.append(1, s[i]);
+	};
+
+	return rev;
 }
