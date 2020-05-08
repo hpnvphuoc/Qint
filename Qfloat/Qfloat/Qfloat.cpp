@@ -8,11 +8,8 @@ Qfloat::Qfloat(const Qfloat &p) {
 		this->data[i] = p.data[i];
 }
 Qfloat::~Qfloat() {}
-int Qfloat::SetBit(int i, bool type) {				// set bit 1 tai vi tri i
-	if (type != 0) {
-		this->data[i / 32] = this->data[i / 32] | (1 << (31 - i % 32));
-	}
-	return this->data[i / 32];
+void Qfloat::SetBit1(int i) {						// set bit 1 tai vi tri i
+	this->data[i / 32] = this->data[i / 32] | (1 << (31 - i % 32));
 }
 int Qfloat::GetBit(int i) {							// lấy bit tại vị trí i
 	return (this->data[i / 32] >> (31 - i % 32)) & 1;
@@ -40,7 +37,7 @@ Qfloat::Qfloat(string s) {
 	int len = s.length();							// độ dài tham số chuỗi 
 	int i = 0;										// biến đếm dùng cho vòng lặp
 	if (s[0] == '-') {								// nếu là số âm
-		this->SetBit(0, 1);							// thì set bit data là 1 tại vị trí 0
+		this->SetBit1(0);							// thì set bit data là 1 tại vị trí 0
 		i++;										// tăng biến đếm đến vị trí tiếp theo
 	}
 	// tách integer và decimal
@@ -59,8 +56,10 @@ Qfloat::Qfloat(string s) {
 	string integer_bin = this->IntegerToBinary(integer);			// chuyển integer sang nhị phân
 	string decimal_bin = this->DecimalToBinary(decimal);			// chuyển decimal sang nhị phân
 	int exponent = this->ExponentValue(integer_bin, decimal_bin);	// tính exponent
+	AddExponent(exponent);											// ghi vào exponent
+	AddFraction(exponent, integer_bin, decimal_bin);				// ghi vào fraction
 }
-string Qfloat::IntegerToBinary(string s) {			
+string Qfloat::IntegerToBinary(string s) {
 	string result;
 	while (s != "0") {								// chia integer tới khi s = 0
 		int len = s.length();
@@ -90,14 +89,14 @@ string Qfloat::DecimalToBinary(string s) { // chưa làm tròn
 		else {
 			result += '0';							// thêm bit 0
 		}
-		s = temp;										
+		s = temp;
 		bool check = 0;								// check xem = 1 chưa
 		for (int i = 0; i < s.length(); i++) {
 			if (s[i] != '0')
 				check = 1;
 		}
 		if (check == 0)								// nếu đã = 1 thì thoát				
-			break;																	
+			break;
 	}
 	return result;
 }
@@ -180,8 +179,76 @@ string Qfloat::Mul2String(string s) {
 		}
 	}
 	//while (result[0] == '0' && result.length() > 1) {
-	//	result.erase(0, 1);							// không xoá số 0 ở đầu tránh TH 03 x 2 = 06
+	//	result.erase(0, 1);							// không xoá số 0 ở đầu tránh TH 03 x 2 = 6
 	//}
 	return result;
 }
+void Qfloat::AddExponent(int exponent) {
+	string exp = to_string(exponent);				// chuyển exponent từ dạng int -> string
+	string exp_bin = this->IntegerToBinary(exp);	// chuyển từ decimal string -> binary string
+	int len = exp_bin.length();						// độ dài string 
+	if (len > 15) {
+		cout << "ERROR";
+		return;
+	}
+	int j = len - 1;								// đếm chỉ số exp_bin từ phải sang trái
+	for (int i = 15; i > 0; i--) {					// vòng lặp để ghi exp_bin vào phần exponent
+		if (exp_bin[j] == '1') {
+			this->SetBit1(i);						// ghi vào phần exponent những bit = 1
+		}
+		j--;
+		if (j < 0)									// thêm hết exp_bin vào phần exponent thì dừng
+			break;
+	}
+}
+void Qfloat::AddFraction(int exponent, string integer, string decimal) {
+	int int_len = integer.length();					// độ dài phần nguyên
+	int dec_len = decimal.length();					// độ dài phần thập phân
+	int E = exponent - bias_num;					// 2^E
+	if (E == 0) {									// dạng chuẩn
+		// ghi phần decimal vào fraction
+		int j = 0;									// biến đếm cho decimal
+		for (int i = 16; i < 128; i++) {
+			if (decimal[j] == '1') {				// ghi những chỗ bit = 1
+				this->SetBit1(i);
+			}
+			j++;
+			if (j >= dec_len)						// ghi hết decimal thì dừng, bit còn lại = 0
+				break;
+		}
+	}
+	else if (E > 0) {								// dịch dấu . sang trái E lần (ghi E bit cuối của integer vô fraction)
+		// ghi phần integer vào fraction
+		int i = 16;
+		int temp = E;
+		for (; i < 16 + E; i++) {
+			if (integer[int_len - 1 - temp + 1] == '1') {	// ghi những chỗ bit = 1 trong E bit cuối của phần integer
+				this->SetBit1(i);
+			}
+			temp--;
+		}
+		// ghi phần decimal vào fraction
+		int j = 0;									// biến đếm cho decimal
+		for (; i < 128; i++) {
+			if (decimal[j] == '1') {				// ghi những chỗ bit = 1
+				this->SetBit1(i);
+			}
+			j++;
+			if (j >= dec_len)						// ghi hết decimal thì dừng, bit còn lại = 0
+				break;
+		}
+	}
+	else {											// dịch dấu . sang phải E lần (bỏ E bit đầu của decimal vô fraction)
+		// ghi phần decimal vào fraction
+		int j = 0 - E;								// biến đếm cho decimal bỏ đi E bit đầu
+		for (int i = 16; i < 128; i++) {
+			if (decimal[j] == '1') {				// ghi những chỗ bit = 1
+				this->SetBit1(i);
+			}
+			j++;
+			if (j >= dec_len)						// ghi hết decimal thì dừng, bit còn lại = 0
+				break;
+		}
+	}
 
+}
