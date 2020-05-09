@@ -692,3 +692,135 @@ bool operator<=(QInt a, QInt b)
 }
 
 
+string QInt::BinToHex(string bit) {
+	string result;
+	for (int i = 0; i < 32; i++) {
+		int a = 0;
+		for (int j = 0; j < 4; j++) {
+			//Tính giá trị của 4 bit
+			if (bit[4 * i + j] == '1') {
+				a = a | (1 << (3 - j));
+			}
+		}
+		result.push_back(ConvertHex(a));
+	}
+	//Rút gọn chuỗi
+	reverse(result.begin(), result.end());
+	while (result.back() == '0') {
+		result.pop_back();
+		if (result.length() == 1)
+			break;
+	}
+	reverse(result.begin(), result.end());
+	return result;
+}
+
+char QInt::ConvertHex(int a) {
+	if (a >= 0 && a <= 9) {
+		return (char(a + 48));
+	}
+	else if (a == 10)
+		return ('A');
+	else if (a == 11)
+		return ('B');
+	else if (a == 12)
+		return ('C');
+	else if (a == 13)
+		return ('D');
+	else if (a == 14)
+		return ('E');
+	else
+		return ('F');
+}
+
+string QInt::DecToHex(string s)
+{
+	string result;
+	result = StrDectoBin(s);
+	result = BinToHex(result);
+	return result;
+}
+
+string QInt::BinToDec(string Bin)
+{
+	bool Negative = false;
+
+	// Kiểm tra số âm và chuyển chuỗi bit âm thành bit dương
+	if (this->is_Negative())
+	{
+		Negative = true;
+		size_t pos = Bin.find_last_of('1');
+		for (int i = 0; i < pos; i++)
+		{
+			if (Bin[i] == '0')
+			{
+				Bin[i] = '1';
+			}
+			else
+			{
+				Bin[i] = '0';
+			}
+		}
+	}
+
+	string pow = "1";
+	string result = "0";
+
+	// Chuyển chuỗi nhị phân sang chuỗi thập phân
+	for (int i = Bin.length() - 1; i >= 0; i--)
+	{
+		if (Bin[i] == '1')
+		{
+			result = SumString(result, pow);
+		}
+		pow = Double(pow);	//tính 2^i
+	}
+
+	// Kiêm tra số âm và thêm dấu trừ
+	if (Negative)
+	{
+		result = "-" + result;
+	}
+	return result;
+}
+
+void QInt::ChuyenDoiHeSo()
+{
+	QInt x;
+	cout << "Chon he so muon chuyen doi: ";
+	int a, b;
+	cin >> a >> b;
+	string temp;
+	cin >> temp;
+	if (a == 10) {
+
+		if (b == 2) {
+			cout << x.DecToBin(temp);
+		}
+		else if (b == 16) {
+			cout << x.DecToHex(temp);
+		}
+
+	}
+	else {
+		if (b == 10) {
+			cout << x.BinToDec(temp);
+		}
+		else if (b == 16) {
+			cout << x.DecToHex(temp);
+		}
+	}
+
+}
+
+string QInt::DecToBin(string bit)
+{
+	string result;
+	result = StrDectoBin(bit);
+	reverse(result.begin(), result.end());
+	while (result.back() == '0')
+		result.pop_back();
+	reverse(result.begin(), result.end());
+	return result;
+}
+
