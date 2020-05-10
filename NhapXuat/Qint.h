@@ -57,9 +57,12 @@ public:
 	friend bool operator>=(QInt a, QInt b);
 	friend bool operator<=(QInt a, QInt b);
 	
-
-
-
+	//Chuyển đổi các hệ số
+	string BinToHex(string bit);//Chuyển chuỗi nhị phân sang thập lục phân
+	string DecToHex(string s);//Chuyển đổi thập phân sang thập lục phân
+	string BinToDec(string bit);//Dùng lại trong hàm QInttoStrDec()
+	string DecToBin(string bit);//Dùng lại hàm StrDectoBin()
+	void ChuyenDoiHeSo();
 
 	string QInttoBin();		// Chuyển QInt thành chuỗi nhị phân
 protected:
