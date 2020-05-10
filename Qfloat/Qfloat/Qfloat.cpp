@@ -1,34 +1,71 @@
 ﻿#include "Qfloat.h"
+// default constructor
 Qfloat::Qfloat() {
 	for (int i = 0; i < 4; i++)						// khởi tạo Qfloat với giá trị 0
 		this->data[i] = 0;
 }
+// copy constructor
 Qfloat::Qfloat(const Qfloat &p) {
 	for (int i = 0; i < 4; i++)						// copy từng byte của p vào Qfloat
 		this->data[i] = p.data[i];
 }
+// destructor
 Qfloat::~Qfloat() {}
-void Qfloat::SetBit1(int i) {						// set bit 1 tai vi tri i
+// đặt bit 1 tại vị trí i
+void Qfloat::SetBit1(int i) {
 	this->data[i / 32] = this->data[i / 32] | (1 << (31 - i % 32));
 }
+// lấy bit ở vị trí i 
 int Qfloat::GetBit(int i) {							// lấy bit tại vị trí i
 	return (this->data[i / 32] >> (31 - i % 32)) & 1;
 }
+// đọc Qfloat ở dạng thập phân	
 void Qfloat::ScanQfloat() {
-	string s;
+	string s;										// chuỗi string dạng thập phân
 	fflush(stdin);
 	getline(cin, s);
 	*this = Qfloat(s);
 }
+// đọc Qfloat ở dạng nhị phân
+void Qfloat::ScanBinQfloat() {
+	string s;										// chuỗi string dạng nhị phân
+	fflush(stdin);
+	getline(cin, s);
+	int len = s.length();
+	int qfloat_num = fraction_num + exponent_num + sign_num;		// tổng số bit của Qfloat
+	bool* bits = new bool[qfloat_num];				// khởi tạo chuỗi bool chứa dãy nhị phân
+	for (int i = 0; i < qfloat_num; i++) {			// khởi tạo Qfloat = 0
+		bits[i] = 0;
+	}
+	for (int i = 0; i < len; i++) {					// đưa giá trị dãy nhị phân vào Qfloat
+		if (s[i] == '1') {
+			bits[i] = 1;
+		}
+	}
+	*this = Qfloat(bits);
+}
+// in ra Qfloat dưới dạng nhị phân	
 void Qfloat::PrintQfloat() {
 	for (int i = 0; i < 128; i++) {
-		cout << GetBit(i);
+		cout << this->GetBit(i);
 		if (i == 0)
 			cout << " ";
 		if (i == 15)
 			cout << " ";
 	}
 }
+// constructor với tham số là dãy nhị phân
+Qfloat::Qfloat(bool* bits) {
+	for (int i = 0; i < 4; i++) {					// khởi tạo Qfloat với giá trị 0 
+		this->data[i] = 0;
+	}
+	for (int i = 0; i < 128; i++) {
+		if (bits[i] == 1) {
+			this->SetBit1(i);
+		}
+	}
+}
+// constructor với tham số là chuỗi thập phân
 Qfloat::Qfloat(string s) {
 	for (int i = 0; i < 4; i++) {					// khởi tạo Qfloat với giá trị 0 
 		this->data[i] = 0;
@@ -59,6 +96,7 @@ Qfloat::Qfloat(string s) {
 	AddExponent(exponent);											// ghi vào exponent
 	AddFraction(exponent, integer_bin, decimal_bin);				// ghi vào fraction
 }
+// chuyển chuỗi số đằng trước dấu chấm thành nhị phân
 string Qfloat::IntegerToBinary(string s) {
 	string result;
 	while (s != "0") {								// chia integer tới khi s = 0
@@ -77,7 +115,8 @@ string Qfloat::IntegerToBinary(string s) {
 	reverse(result.begin(), result.end());			// đảo chuỗi
 	return result;
 }
-string Qfloat::DecimalToBinary(string s) { 
+// chuyển chuỗi số đằng sau dấu chấm thành nhị phân		
+string Qfloat::DecimalToBinary(string s) {
 	string result;
 	int count = fraction_num;						// biến đếm trường hợp phần bit thập phân dài hơn fraction
 	while (count--) {
@@ -100,6 +139,7 @@ string Qfloat::DecimalToBinary(string s) {
 	}
 	return result;
 }
+// tính exponent 
 int Qfloat::ExponentValue(string integer, string decimal) {
 	int int_len = integer.length();					// độ dài phần nguyên
 	int dec_len = decimal.length();					// độ dài phần thập phân
@@ -119,6 +159,7 @@ int Qfloat::ExponentValue(string integer, string decimal) {
 	exponent = 0;									// chuỗi = 0
 	return exponent;
 }
+// trả về kết quả là chuỗi string*2
 string Qfloat::Div2String(string s) {
 	string result;									// chuỗi lưu kết quả
 	int	dividend = 0;								// số bị chia
@@ -143,6 +184,7 @@ string Qfloat::Div2String(string s) {
 	}
 	return result;
 }
+// trả về kết quả là chuỗi string/2
 string Qfloat::Mul2String(string s) {
 	string result;									// result = null
 	int product = 0;								// tích
@@ -183,6 +225,7 @@ string Qfloat::Mul2String(string s) {
 	//}
 	return result;
 }
+// ghi exponent vào data
 void Qfloat::AddExponent(int exponent) {
 	string exp = to_string(exponent);				// chuyển exponent từ dạng int -> string
 	string exp_bin = this->IntegerToBinary(exp);	// chuyển từ decimal string -> binary string
@@ -201,6 +244,7 @@ void Qfloat::AddExponent(int exponent) {
 			break;
 	}
 }
+// ghi fraction vào data
 void Qfloat::AddFraction(int exponent, string integer, string decimal) {
 	int int_len = integer.length();					// độ dài phần nguyên
 	int dec_len = decimal.length();					// độ dài phần thập phân
@@ -252,10 +296,224 @@ void Qfloat::AddFraction(int exponent, string integer, string decimal) {
 	}
 
 }
-void DecToBin(Qfloat a){
+// chuyển đổi số Qfloat thập phân sang nhị phân
+void DecToBin(Qfloat a) {
 	cout << "Nhap so thap phan" << endl;
 	cout << "Dec: ";
 	a.ScanQfloat();
 	cout << "Bin: ";
 	a.PrintQfloat();
+}
+// trả về kết quả là chuỗi string*5
+string Qfloat::Mul5String(string s) {
+	string result;
+	int len = s.length();
+	int mem = 0;
+	for (int i = len - 1; i >= 0; i--) {
+		int temp = (s[i] - '0') * 5 + mem;
+		result = (char)(temp % 10 + '0') + result;
+		mem = temp / 10;
+	}
+	if (mem != 0) {
+		result = (char)(mem + '0') + result;
+	}
+	while (result[0] == '0' && result.length() > 1) {		// xoá số 0 ở đầu
+		result.erase(0, 1);
+	}
+	return result;
+}
+string Qfloat::SumString(string a, string b)
+{
+	// đảo 2 chuỗi
+	reverse(a.begin(), a.end());
+	reverse(b.begin(), b.end());
+
+	// chèn số 0 vào cuối chuỗi
+	a.push_back('0');
+	b.push_back('0');
+
+	char temp = 0;	// biến nhớ
+	string result;
+	int i = 0;
+
+	// cộng từ hàng số tương ứng của 2 chuỗi
+	while ((i < a.length()) && (i < b.length()))
+	{
+		char sum = (a[i] - '0' + b[i] - '0' + temp) % 10 + '0';
+		temp = (a[i] - '0' + b[i] - '0' + temp) / 10;
+		result.push_back(sum);
+		i++;
+	}
+	if (i < a.length())
+	{
+		result = result + a.substr(i);
+	}
+	else
+	{
+		if (i < b.length())
+		{
+			result = result + b.substr(i);
+		}
+	}
+	if (result[result.length() - 1] == '0')
+	{
+		result.pop_back();
+	}
+
+	reverse(result.begin(), result.end());
+	return result;
+}
+string Qfloat::Double(string src)
+{
+	return this->SumString(src, src);
+}
+string Qfloat::BinToDec(string Bin) {
+	string pow = "1";
+	string result = "0";
+
+	// Chuyển chuỗi nhị phân sang chuỗi thập phân
+	for (int i = Bin.length() - 1; i >= 0; i--)
+	{
+		if (Bin[i] == '1')
+		{
+			result = SumString(result, pow);
+		}
+		pow = Double(pow);	//tính 2^i
+	}
+
+	return result;
+}
+// kiểm tra số đặc biệt
+string Qfloat::CheckDenormalized() {
+	bool check_exp_0 = true;						// nếu exponent toàn số 0
+	bool check_exp_1 = true;						// nếu exponent toàn số 1
+	for (int i = 1; i < 16; i++) {
+		if (this->GetBit(i) != 0) {
+			check_exp_0 = false;
+		}
+		if (this->GetBit(i) != 1) {
+			check_exp_1 = false;
+		}
+	}
+	if (check_exp_0 == true) {						// underflow hoặc số 0
+		for (int i = 16; i < 127; i++) {
+			if (this->GetBit(i) != 0) {				// fraction không toàn số 0
+				return "underflow";
+			}
+		}
+	}
+	else if (check_exp_1 == true) {					// +-infinity hoặc NaN
+		bool check_frac_0 = true;					// nếu fraction toàn số 0
+		for (int i = 16; i < 127; i++) {
+			if (this->GetBit(i) != 0) {
+				check_frac_0 = false;
+			}
+		}
+		if (check_frac_0 == true) {					// fraction toàn số 0
+			if (this->GetBit(0) == 0) {
+				return "+infinity";
+			}
+			else {
+				return "-infinity";
+			}
+		}
+		else {
+			return "NaN";
+		}
+	}
+	return "";
+}
+// chuyển dạng 1.F * 2 ^ E về dạng chưa chuẩn
+string Qfloat::MovePoint(string frac, int e) {			//1.frac * 2^e 
+	string result;
+	if (e < 0) {								// result = 0.<e-1 số 0>1<frac>
+		e = -e;
+		result += "0.";
+		for (int i = 0; i < e - 1; i++) {
+			result += '0';
+		}
+		result += '1' + frac;
+	}
+	else if (e == 0) {							// result = 1.<frac>
+		result += "1." + frac;
+	}
+	else {
+		if (e >= frac.length()) {				// result = 1<frac><e-frac.len số 0>.0
+			result += "1" + frac;
+			for (int i = 0; i < e - frac.length(); i++) {
+				result += '0';
+			}
+			result += ".0";
+		}
+		else {									// result = 1<e bit đầu frac>.<frac còn lại>
+			result += '1';
+			int i = 0;
+			for (; i < e; i++) {
+				result += frac[i];
+			}
+			result += '.';
+			for (; i < frac.length(); i++) {
+				result += frac[i];
+			}
+		}
+	}
+	return result;
+}
+string Qfloat::GetDecimalValue() {
+	if (this->CheckDenormalized() != "")			// là một trong các số đặc biệt thì thoát
+		return this->CheckDenormalized();
+	string result;									// chuỗi lưu kết quả
+	if (this->GetBit(0) == 1) {						// số âm
+		result += '-';
+	}
+	// tính F (1.F)
+	string frac;									// lấy fraction 
+	for (int i = 16; i < 128; i++) {
+		frac += this->GetBit(i) + '0';
+	}
+
+	int j = 111;
+	while (frac[j] == '0' && frac.length() > 1) {	// xoá số 0 ở cuối
+		frac.erase(j, 1);
+		j--;
+	}
+	// tính E (2^E) 
+	string exp_bin;									// lấy exponent (hệ 2)
+	for (int i = 1; i < 16; i++) {
+		exp_bin += this->GetBit(i) + '0';
+	}
+	string exp_dec = this->BinToDec(exp_bin);		// exponent hệ 10
+	int exponent = stoi(exp_dec, nullptr, 10);		// chuyển dạng string sang int
+	int E = exponent - bias_num;
+	// chuyển về dạng chưa chuẩn
+	string denormalized = MovePoint(frac, E);
+	string IntBin, DecBin;							// tách phần integer và decimal
+	int i = 0;
+	for (; i < denormalized.length(); i++) {
+		if (denormalized[i] != '.') {
+			IntBin += denormalized[i];
+		}
+		else {
+			break;
+		}
+	}
+	i++;
+	for (; i < denormalized.length(); i++) {
+		DecBin += denormalized[i];
+	}
+	// tính phần nguyên
+	string IntDec = this->BinToDec(IntBin);
+	// tính phần thập phân
+	string DecDec;
+	// ghép phần nguyên và thập phân lại
+	result += IntDec + '.' + DecDec;
+	return result;
+}
+void BinToDec(Qfloat a) {
+	cout << "Nhap day nhi phan: ";
+	a.ScanBinQfloat();
+	cout << "Bin: ";
+	a.PrintQfloat();
+	cout << endl;
+	cout << "Dec: " << a.GetDecimalValue();
 }
