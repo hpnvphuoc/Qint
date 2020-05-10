@@ -24,10 +24,13 @@ private:
 	int GetBit(int);						// lấy bit ở vị trí bất kỳ
 	string Div2String(string);				// trả về kết quả là chuỗi string/2
 	string Mul2String(string);				// trả về kết quả là chuỗi string*2
-	string Mul5String(string);				// trả về kết quả là chuỗi string*5
-	string SumString(string, string);
-	string Double(string);
-	string BinToDec(string);
+	string SumString(string, string);		// cộng 2 chuỗi nguyên
+	string Double(string);					// x2 chuỗi nguyên
+	string BinToDec(string);				// chuyển số nguyên hệ 2 -> 10
+	string FloatDivTwo(string);				// chia số thực cho 2
+	string SumFloatString(string, string);	// cộng 2 số thực
+	string PowerNeg2(int);					// tính 2^(-x)
+	string DecBinToDec(string);				// chuyển phần thập phân hệ 2 -> 10
 	string IntegerToBinary(string);			// trả về chuỗi đã chuyển số đằng trước dấu chấm thành nhị phân
 	string DecimalToBinary(string);			// trả về chuỗi đã chuyển số đằng sau dấu chấm thành nhị phân				=> PROBLEM: chưa làm tròn lên, xuống
 	int ExponentValue(string, string);		// trả về giá trị exponent 

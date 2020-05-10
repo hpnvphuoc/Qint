@@ -304,24 +304,7 @@ void DecToBin(Qfloat a) {
 	cout << "Bin: ";
 	a.PrintQfloat();
 }
-// trả về kết quả là chuỗi string*5
-string Qfloat::Mul5String(string s) {
-	string result;
-	int len = s.length();
-	int mem = 0;
-	for (int i = len - 1; i >= 0; i--) {
-		int temp = (s[i] - '0') * 5 + mem;
-		result = (char)(temp % 10 + '0') + result;
-		mem = temp / 10;
-	}
-	if (mem != 0) {
-		result = (char)(mem + '0') + result;
-	}
-	while (result[0] == '0' && result.length() > 1) {		// xoá số 0 ở đầu
-		result.erase(0, 1);
-	}
-	return result;
-}
+
 string Qfloat::SumString(string a, string b)
 {
 	// đảo 2 chuỗi
@@ -383,6 +366,186 @@ string Qfloat::BinToDec(string Bin) {
 
 	return result;
 }
+string Qfloat::FloatDivTwo(string a)
+{
+	string result;
+	int i = 0;
+	char temp = 0;
+	while ((i < a.length()) || (temp != 0))
+	{
+		if (i < a.length())
+		{
+			if (a[i] == '.')
+			{
+				result.push_back('.');
+				i++;
+			}
+			else
+			{
+				result.push_back((a[i] - '0' + temp * 10) / 2 + '0');
+				temp = (a[i] - '0' + temp * 10) % 2;
+				i++;
+			}
+		}
+		else
+		{
+			size_t dot = result.find('.');
+			if (dot != string::npos)
+			{
+				result.push_back((temp * 10) / 2 + '0');
+				temp = (temp * 10) % 2;
+			}
+			else
+			{
+				result.push_back('.');
+				result.push_back((temp * 10) / 2 + '0');
+				temp = (temp * 10) % 2;
+			}
+		}
+
+	}
+	if (result.length() >= 2)
+	{
+		if ((result[0] == '0') && (result[1] != '.'))
+		{
+			result.erase(result.begin());
+		}
+	}
+	return result;
+}
+string Qfloat::SumFloatString(string a, string b)
+{
+	size_t ad = a.find('.');
+	size_t bd = b.find('.');
+	string f1, f2;
+	string z1, z2;
+	string result;
+	if (ad != string::npos)
+	{
+		f1 = a.substr(ad + 1);
+		z1 = a.substr(0, ad);
+	}
+	else
+	{
+		z1 = a;
+	}
+
+	if (bd != string::npos)
+	{
+		f2 = b.substr(bd + 1);
+		z2 = b.substr(0, bd);
+	}
+	else
+	{
+		z2 = b;
+	}
+	string fadd;
+	int min;
+	if (f1.length() < f2.length())
+	{
+		min = f1.length() - 1;
+		fadd = f2.substr(f1.length());
+	}
+	else
+	{
+		min = f2.length() - 1;
+		if (f1.length() != f2.length())
+		{
+			fadd = f1.substr(f2.length());
+		}
+	}
+
+	char temp = 0;
+	for (int i = min; i >= 0; i--)
+	{
+		char sum = (f1[i] - '0' + f2[i] - '0' + temp) % 10 + '0';
+		temp = (f1[i] - '0' + f2[i] - '0' + temp) / 10;
+		result = sum + result;
+	}
+	if ((ad != string::npos) || (bd != string::npos))
+	{
+		result = '.' + result + fadd;
+	}
+
+	int k = z1.length() - z2.length();
+	int i = z1.length() - 1;
+	while ((i >= 0) || (temp != 0) || (i - k >= 0))
+	{
+		if ((i >= 0) && (i - k >= 0))
+		{
+			char sum = (z1[i] - '0' + z2[i - k] - '0' + temp) % 10 + '0';
+			temp = (z1[i] - '0' + z2[i - k] - '0' + temp) / 10;
+			result = sum + result;
+		}
+		else if (i >= 0)
+		{
+			if (temp == 1)
+			{
+				char sum = (z1[i] - '0' + temp) % 10 + '0';
+				temp = (z1[i] - '0' + temp) / 10;
+				result = sum + result;
+			}
+			else
+			{
+				result = z1.substr(0, i + 1) + result;
+				break;
+			}
+		}
+		else if (i - k >= 0)
+		{
+			if (temp == 1)
+			{
+				char sum = (z2[i] - '0' + temp) % 10 + '0';
+				temp = (z2[i] - '0' + temp) / 10;
+				result = sum + result;
+			}
+			else
+			{
+				result = z2.substr(0, i - k + 1) + result;
+				break;
+			}
+		}
+		else
+		{
+			if (temp == 1)
+			{
+				result = '1' + result;
+			}
+			break;
+		}
+		i--;
+	}
+	while (result[result.length() - 1] == '0')
+	{
+		result.pop_back();
+		if (result[result.length() - 1] == '.')
+		{
+			result.pop_back();
+			break;
+		}
+	}
+	return result;
+}
+// tính 2^(-x)
+string Qfloat::PowerNeg2(int x) {  
+	string result = "1";							// bắt đầu từ 1
+	for (int i = 0; i < x; i++) {
+		result = this->FloatDivTwo(result);			// x/2
+	}
+	return result;
+}
+// chuyển phần thập phân hệ 2 -> 10
+string Qfloat::DecBinToDec(string s) {
+	string result = "0";
+	for (int i = 0; i < s.length(); i++) {
+		if (s[i] == '1') {
+			result = this->SumFloatString(result,PowerNeg2(i+1));
+		}
+	}
+	result.erase(0, 1);								// xoá "0."
+	result.erase(0, 1);
+	return result;
+}
 // kiểm tra số đặc biệt
 string Qfloat::CheckDenormalized() {
 	bool check_exp_0 = true;						// nếu exponent toàn số 0
@@ -396,11 +559,19 @@ string Qfloat::CheckDenormalized() {
 		}
 	}
 	if (check_exp_0 == true) {						// underflow hoặc số 0
+		bool check_frac_0 = true;					// nếu fraction toàn số 0
 		for (int i = 16; i < 127; i++) {
-			if (this->GetBit(i) != 0) {				// fraction không toàn số 0
-				return "underflow";
+			if (this->GetBit(i) != 0) {				
+				check_frac_0 = false;
 			}
 		}
+		if (check_frac_0 == true) {					// fraction toàn số 0
+			return "0";
+		}
+		else {										// fraction không toàn số 0
+			return "underflow";					
+		}
+		
 	}
 	else if (check_exp_1 == true) {					// +-infinity hoặc NaN
 		bool check_frac_0 = true;					// nếu fraction toàn số 0
@@ -417,7 +588,7 @@ string Qfloat::CheckDenormalized() {
 				return "-infinity";
 			}
 		}
-		else {
+		else {										// fraction không toàn số 0
 			return "NaN";
 		}
 	}
@@ -504,7 +675,7 @@ string Qfloat::GetDecimalValue() {
 	// tính phần nguyên
 	string IntDec = this->BinToDec(IntBin);
 	// tính phần thập phân
-	string DecDec;
+	string DecDec = this->DecBinToDec(DecBin);
 	// ghép phần nguyên và thập phân lại
 	result += IntDec + '.' + DecDec;
 	return result;

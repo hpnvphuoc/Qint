@@ -1,5 +1,6 @@
 ﻿#include "Qfloat.h"
 
+
 int main() {
 	Qfloat a;
 	DecToBin(a);
@@ -7,3 +8,5 @@ int main() {
 	BinToDec(a);
 	return 0;
 }
+
+
