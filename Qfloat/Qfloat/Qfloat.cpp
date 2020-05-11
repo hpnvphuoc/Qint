@@ -90,6 +90,20 @@ Qfloat::Qfloat(string s) {
 	for (; i < len; i++) {							// chuyển phần thập phân vào decimal
 		decimal += s[i];
 	}
+	// kiểm tra số 0 
+	bool iszero_int = true;
+	bool iszero_dec = true;
+	for (int i = 0; i < integer.length(); i++) {
+		if (integer[i] != '0')
+			iszero_int = false;
+	}
+	for (int i = 0; i < decimal.length(); i++) {
+		if (decimal[i] != '0')
+			iszero_dec = false;
+	}
+	if (iszero_dec == true && iszero_int == true)
+		return;
+	// xử lý các trường hợp bình thường
 	string integer_bin = this->IntegerToBinary(integer);			// chuyển integer sang nhị phân
 	string decimal_bin = this->DecimalToBinary(decimal);			// chuyển decimal sang nhị phân
 	int exponent = this->ExponentValue(integer_bin, decimal_bin);	// tính exponent
