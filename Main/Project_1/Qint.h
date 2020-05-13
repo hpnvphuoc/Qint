@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -67,6 +68,7 @@ public:
 
 	void ChuyenDoiHeSo();
 	char ConvertHex(int a);
+	
 
 	string QInttoBin();		// Chuyển QInt thành chuỗi nhị phân
 	string StrHextoBin(string src);//chuyển chuổi hệ 16 sang chuỗi nhị phân

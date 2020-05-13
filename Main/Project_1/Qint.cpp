@@ -714,6 +714,16 @@ bool operator<=(QInt a, QInt b)
 
 
 string QInt::BinToHex(string bit) {
+	//Kiểm tra xem chuỗi bit có đủ 128 bit
+	if (bit.length() != 128) {
+		//Thêm bit 0 vào chuỗi cho đủ 128 bit
+		reverse(bit.begin(), bit.end());
+		while (bit.length() != 128) {
+			bit.push_back('0');
+		}
+		reverse(bit.begin(), bit.end());
+	}
+
 	string result;
 	for (int i = 0; i < 32; i++) {
 		int a = 0;
@@ -753,6 +763,8 @@ char QInt::ConvertHex(int a) {
 	else
 		return ('F');
 }
+
+
 
 string QInt::DecToHex(string s)
 {

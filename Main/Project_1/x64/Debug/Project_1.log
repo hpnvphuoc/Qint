@@ -1,0 +1,13 @@
+﻿  Qint.cpp
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(256,29): warning C4267:  'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(356,31): warning C4267:  'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(422,7): warning C4101:  'temp': unreferenced local variable
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(450,6): warning C4101:  'result': unreferenced local variable
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(458,6): warning C4101:  'result': unreferenced local variable
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(795,31): warning C4267:  'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(167): warning C4172:  returning address of local variable or temporary: temp
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(186): warning C4172:  returning address of local variable or temporary: temp
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(196): warning C4172:  returning address of local variable or temporary: temp
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(207): warning C4172:  returning address of local variable or temporary: temp
+D:\GitHub\Qint\Main\Project_1\Qint.cpp(871): warning C4715:  'ConvertHexCharToBin': not all control paths return a value
+  Project_1.vcxproj -> D:\GitHub\Qint\Main\x64\Debug\Project_1.exe
