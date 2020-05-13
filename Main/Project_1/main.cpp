@@ -193,12 +193,12 @@ int main(int argc, char* argv[]) {
 						break;
 					}
 					case 3: {
-						//string bin;
-						////cout << "Vui long nhap so can chuyen " << endl;
-						////cin.ignore();
-						////getline(cin, bin);
-						////cout<<temp_m.BinToHex(bin)<<endl;
-						//break;
+						string bin;
+						cout << "Vui long nhap so can chuyen " << endl;
+						cin.ignore();
+						getline(cin, bin);
+						cout<<temp_m.BinToHex(bin)<<endl;
+						break;
 					}
 					case 4: {
 						string dec;
@@ -456,193 +456,195 @@ int main(int argc, char* argv[]) {
 		}while (command != 3);
 	}
 	else {
-		vector <string> input, output;
-		input = ReadDataFromFile(argv[1]);
-		vector<string> temp;
-		QInt n;
-		string temp_res;
-		for (int i = 0; i < input.size(); i++) {
-			temp = cutstring(input[i], " ");
-			switch (temp.size()) {
-			case 3: {//chuyen doi co so
-				if (temp[1] == "~") {
-					QInt temp_m;
-					CreateQint(temp_m, temp[2], temp[0]);
-					temp_m = ~temp_m;
-					temp_res = temp_m.QInttoBin();
-					output.push_back(temp_res);
-				}
-				else {
-					if (temp[0] == "10" && temp[1] == "2") {
-						temp_res = n.DecToBin(temp[2]);
+		if (*argv[3] == '1') {
+			vector <string> input, output;
+			input = ReadDataFromFile(argv[1]);
+			vector<string> temp;
+			QInt n;
+			string temp_res;
+			for (int i = 0; i < input.size(); i++) {
+				temp = cutstring(input[i], " ");
+				switch (temp.size()) {
+				case 3: {//chuyen doi co so
+					if (temp[1] == "~") {
+						QInt temp_m;
+						CreateQint(temp_m, temp[2], temp[0]);
+						temp_m = ~temp_m;
+						temp_res = temp_m.QInttoBin();
 						output.push_back(temp_res);
 					}
-					if (temp[0] == "2" && temp[1] == "10") {
-						temp_res = n.BinToDec(temp[2]);
-						output.push_back(temp_res);
-					}
-					if (temp[0] == "2" && temp[1] == "16") {
-						temp_res = "LOI";
-						output.push_back(temp_res);
-					}
-					if (temp[0] == "10" && temp[1] == "16") {
-						temp_res = n.DecToHex(temp[2]);
-						output.push_back(temp_res);
-					}
+					else {
+						if (temp[0] == "10" && temp[1] == "2") {
+							temp_res = n.DecToBin(temp[2]);
+							output.push_back(temp_res);
+						}
+						if (temp[0] == "2" && temp[1] == "10") {
+							temp_res = n.BinToDec(temp[2]);
+							output.push_back(temp_res);
+						}
+						if (temp[0] == "2" && temp[1] == "16") {
+							temp_res = n.BinToHex(temp[2]);
+							output.push_back(temp_res);
+						}
+						if (temp[0] == "10" && temp[1] == "16") {
+							temp_res = n.DecToHex(temp[2]);
+							output.push_back(temp_res);
+						}
 
+					}
+					break;
 				}
-				break;
-			}
 
-			case 4: {
-				if (temp[2] == "<<") {
-					int n = stoi(temp[3]);
-					QInt LNumber;
-					CreateQint(LNumber, temp[1], temp[0]);
-					QInt result_c;
-					result_c = LNumber << n;
-					temp_res = result_c.QInttoBin();
-					output.push_back(temp_res);
-				}
-				if (temp[2] == ">>") {
-					int n = stoi(temp[3]);
-					QInt LNumber;
-					CreateQint(LNumber, temp[1], temp[0]);
-					QInt result_c;
-					result_c = LNumber >> n;
-					temp_res = result_c.QInttoBin();
-					output.push_back(temp_res);
-				}
-				if (temp[2] == "ror") {
-					int n = stoi(temp[3]);
-					QInt LNumber;
-					CreateQint(LNumber, temp[1], temp[0]);
-					QInt result_c;
-					result_c = LNumber.ror(n);
-					temp_res = result_c.QInttoBin();
-					output.push_back(temp_res);
-				}
-				if (temp[2] == "rol") {
-					int n = stoi(temp[3]);
-					QInt LNumber;
-					CreateQint(LNumber, temp[1], temp[0]);
-					QInt result_c;
-					result_c = LNumber.rol(n);
-					temp_res = result_c.QInttoBin();
-					output.push_back(temp_res);
-				}
-				if (temp[2] == ">" || temp[2] == "<" || temp[2] == ">=" || temp[2] == "<=" || temp[2] == "==") {
-					string result_compare_c;
-					if (temp[0] == "2") {
-						QInt a(temp[1]);
-						QInt b(temp[3]);
-						CompareQint(a, b, result_compare_c, temp[2]);
-						output.push_back(result_compare_c);
-					}
-					if (temp[0] == "10") {
-						QInt init;
-						string temp_string;
-						temp_string = init.DecToBin(temp[1]);
-						QInt a(temp_string);
-						temp_string = init.DecToBin(temp[3]);
-						QInt b(temp_string);
-						CompareQint(a, b, result_compare_c, temp[2]);
-						output.push_back(result_compare_c);
-					}
-					if (temp[0] == "16") {
-						QInt init;
-						string temp_string;
-						temp_string = init.StrHextoBin(temp[1]);
-						QInt a(temp_string);
-						temp_string = init.StrHextoBin(temp[3]);
-						QInt b(temp_string);
-						CompareQint(a, b, result_compare_c, temp[2]);
-						output.push_back(result_compare_c);
-					}
-				}
-				if (temp[2] == "+" || temp[2] == "-" || temp[2] == "*" ||temp[2]=="/"||temp[2]=="^"||temp[2]=="|"||temp[2]=="&") {
-					QInt result_c;
-					if (temp[0] == "2") {
-						QInt a(temp[1]);
-						QInt b(temp[3]);
-						CalQint(a, b, result_c, temp[2]);
+				case 4: {
+					if (temp[2] == "<<") {
+						int n = stoi(temp[3]);
+						QInt LNumber;
+						CreateQint(LNumber, temp[1], temp[0]);
+						QInt result_c;
+						result_c = LNumber << n;
 						temp_res = result_c.QInttoBin();
 						output.push_back(temp_res);
 					}
-					if (temp[0] == "10") {
-						QInt init;
-						string temp_string;
-						temp_string = init.DecToBin(temp[1]);
-						QInt a(temp_string);
-						temp_string = init.DecToBin(temp[3]);
-						QInt b(temp_string);
+					if (temp[2] == ">>") {
+						int n = stoi(temp[3]);
+						QInt LNumber;
+						CreateQint(LNumber, temp[1], temp[0]);
 						QInt result_c;
-						CalQint(a, b, result_c, temp[2]);
-						temp_string = result_c.QInttoBin();
-						temp_res = result_c.BinToDec(temp_string);
+						result_c = LNumber >> n;
+						temp_res = result_c.QInttoBin();
 						output.push_back(temp_res);
 					}
-					if (temp[0] == "16") {
-						QInt init;
-						string temp_string;
-						temp_string = init.StrHextoBin(temp[1]);
-						QInt a(temp_string);
-						temp_string = init.StrHextoBin(temp[3]);
-						QInt b(temp_string);
+					if (temp[2] == "ror") {
+						int n = stoi(temp[3]);
+						QInt LNumber;
+						CreateQint(LNumber, temp[1], temp[0]);
 						QInt result_c;
-						CalQint(a, b, result_c, temp[2]);
-						temp_string = result_c.QInttoBin();
-						temp_res = result_c.BinToHex(temp_string);
+						result_c = LNumber.ror(n);
+						temp_res = result_c.QInttoBin();
 						output.push_back(temp_res);
 					}
-				}
-				break;
-			}
-
-			{
-			default:
-				break;
-			}
-
-	}
-		}
-		WriteDataToFile(argv[2], output);
-		}
-
-	
-
-	/*vector<string> input_float, output_float;
-	
-	input_float = ReadDataFromFile("QFloat_input.txt");
-	vector<string> temp;
-		string temp_res;
-		for (int i = 0; i < input_float.size(); i++) {
-			
-			temp = cutstring(input_float[i], " ");
-			if (temp[0] == "10" && temp[1] == "2") {
-				Qfloat n(temp[2]);
-				temp_res = "LOI";
-				output_float.push_back(temp_res);
-			}
-			if (temp[0] == "2" && temp[1] == "10") {
-				int size = temp[2].size();
-				bool* a=new bool[128];
-				for (int i = 0; i < size; i++) {
-					if (temp[2][i] == '0') {
-						a[i] = 0;
+					if (temp[2] == "rol") {
+						int n = stoi(temp[3]);
+						QInt LNumber;
+						CreateQint(LNumber, temp[1], temp[0]);
+						QInt result_c;
+						result_c = LNumber.rol(n);
+						temp_res = result_c.QInttoBin();
+						output.push_back(temp_res);
 					}
-					else {
-						a[i] = 1;
+					if (temp[2] == ">" || temp[2] == "<" || temp[2] == ">=" || temp[2] == "<=" || temp[2] == "==") {
+						string result_compare_c;
+						if (temp[0] == "2") {
+							QInt a(temp[1]);
+							QInt b(temp[3]);
+							CompareQint(a, b, result_compare_c, temp[2]);
+							output.push_back(result_compare_c);
+						}
+						if (temp[0] == "10") {
+							QInt init;
+							string temp_string;
+							temp_string = init.DecToBin(temp[1]);
+							QInt a(temp_string);
+							temp_string = init.DecToBin(temp[3]);
+							QInt b(temp_string);
+							CompareQint(a, b, result_compare_c, temp[2]);
+							output.push_back(result_compare_c);
+						}
+						if (temp[0] == "16") {
+							QInt init;
+							string temp_string;
+							temp_string = init.StrHextoBin(temp[1]);
+							QInt a(temp_string);
+							temp_string = init.StrHextoBin(temp[3]);
+							QInt b(temp_string);
+							CompareQint(a, b, result_compare_c, temp[2]);
+							output.push_back(result_compare_c);
+						}
 					}
+					if (temp[2] == "+" || temp[2] == "-" || temp[2] == "*" || temp[2] == "/" || temp[2] == "^" || temp[2] == "|" || temp[2] == "&") {
+						QInt result_c;
+						if (temp[0] == "2") {
+							QInt a(temp[1]);
+							QInt b(temp[3]);
+							CalQint(a, b, result_c, temp[2]);
+							temp_res = result_c.QInttoBin();
+							output.push_back(temp_res);
+						}
+						if (temp[0] == "10") {
+							QInt init;
+							string temp_string;
+							temp_string = init.DecToBin(temp[1]);
+							QInt a(temp_string);
+							temp_string = init.DecToBin(temp[3]);
+							QInt b(temp_string);
+							QInt result_c;
+							CalQint(a, b, result_c, temp[2]);
+							temp_string = result_c.QInttoBin();
+							temp_res = result_c.BinToDec(temp_string);
+							output.push_back(temp_res);
+						}
+						if (temp[0] == "16") {
+							QInt init;
+							string temp_string;
+							temp_string = init.StrHextoBin(temp[1]);
+							QInt a(temp_string);
+							temp_string = init.StrHextoBin(temp[3]);
+							QInt b(temp_string);
+							QInt result_c;
+							CalQint(a, b, result_c, temp[2]);
+							temp_string = result_c.QInttoBin();
+							temp_res = result_c.BinToHex(temp_string);
+							output.push_back(temp_res);
+						}
+					}
+					break;
 				}
-				Qfloat n(a);
-				temp_res = n.GetDecimalValue();
-				output_float.push_back(temp_res);
-			}
 
-			
+				{
+				default:
+					break;
+				}
+
+				}
+			}
+			WriteDataToFile(argv[2], output);
+		}
+		if (*argv[3] == '2') {
+
+			vector<string> input_float, output_float;
+
+			input_float = ReadDataFromFile(argv[1]);
+			vector<string> temp;
+				string temp_res;
+				for (int i = 0; i < input_float.size(); i++) {
+
+					temp = cutstring(input_float[i], " ");
+					if (temp[0] == "10" && temp[1] == "2") {
+						Qfloat n(temp[2]);
+						temp_res = n.GetBinaryString();
+						output_float.push_back(temp_res);
+					}
+					if (temp[0] == "2" && temp[1] == "10") {
+						int size = temp[2].size();
+						bool* a=new bool[128];
+						for (int i = 0; i < size; i++) {
+							if (temp[2][i] == '0') {
+								a[i] = 0;
+							}
+							else {
+								a[i] = 1;
+							}
+						}
+						Qfloat n(a);
+						temp_res = n.GetDecimalValue();
+						output_float.push_back(temp_res);
+					}
+
+
+			}
+			WriteDataToFile(argv[2],output_float);
+		}
 	}
-	WriteDataToFile("QFloat_output.txt",output_float);*/
 	return 0;
 }
 

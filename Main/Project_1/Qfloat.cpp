@@ -694,6 +694,20 @@ string Qfloat::GetDecimalValue() {
 	result += IntDec + '.' + DecDec;
 	return result;
 }
+string Qfloat::GetBinaryString()
+{
+	string result;
+	for (int i = 0; i < 128; i++) {
+		if (this->GetBit(i)) {
+			result = result + "1";
+		}
+		else {
+			result = result + "0";
+		}
+	}
+	
+	return result;
+}
 void BinToDec(Qfloat a) {
 	cout << "Nhap day nhi phan: ";
 	a.ScanBinQfloat();

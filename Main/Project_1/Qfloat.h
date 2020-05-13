@@ -48,6 +48,7 @@ public:
 	void ScanBinQfloat();					// đọc Qfloat ở dạng nhị phân
 	void PrintQfloat();						// in ra Qfloat dưới dạng nhị phân	
 	string GetDecimalValue();				// trả về chuỗi giá trị thập phân của Qfloat	
+	string GetBinaryString();				//tra ve chuoi gia tri nhi phan cua Qfloat
 };
 
 void DecToBin(Qfloat a);					// chuyển đổi số Qfloat thập phân sang nhị phân
